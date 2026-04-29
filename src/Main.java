@@ -1,16 +1,32 @@
-import java.util.ArrayList;
 
-class Department {
-    private String name;
+import java.util.ArrayList;
+import java.util.List;
+
+class Department{
+    private String title;
     private ArrayList<Employee> employees = new ArrayList<>();
 
-    public Department(String name) {
-        this.name = name;
+    public Department(String title) {
+        this.title = title;
+    }
+
+    public List<Employee> findEmployeeByName(String name) {
+        List<Employee> result = new ArrayList<>();
+
+        for (Employee e : employees) {
+            if (e.getName().equalsIgnoreCase(name)) {
+                result.add(e);
+            }
+        }
+        if (result.isEmpty()) {
+            throw new RuntimeException("Сотрудник не найден.");
+        }
+        return result;
     }
 
     public void invite(Employee employee) {
-        for (Employee e : employees) {
-            if (e.getId()== employee.getId()) {
+        for (Employee e: employees) {
+            if(e.getId()==employee.getId()) {
                 throw new RuntimeException("Пользователь уже существует.");
             }
         }
@@ -20,85 +36,59 @@ class Department {
     public void uninvite(int id) {
         employees.removeIf(e -> e.getId() == id);
     }
-
-    public Employee findEmployeeByName(String name) {
-        for (Employee e : employees) {
-            if (e.getName().equalsIgnoreCase(name)) {
-                return e;
-            }
-        }
-        throw new RuntimeException("Пользователь не найден.");
-    }
-
-    public Employee getHighPaid() {
-        Employee best = null;
-
-        for (Employee e : employees) {
-            if (best == null || e.calculateSalary() > best.calculateSalary()) {
-                best = e;
-            }
-        }
-        return best;
-    }
 }
 
 
 
 abstract class Employee {
-    protected int id;
-    protected String name;
-    protected String job;
+    private int id;
+    private String name;
+    private String jobTitle;
     private static int counter = 1;
 
-    public Employee(String name, String job) {
+    public Employee(String name, String jobTitle) {
         this.id = counter++;
         this.name = name;
-        this.job = job;
+        this.jobTitle = jobTitle;
     }
-
-    public abstract double calculateSalary();
 
     public String getName() {return name;}
     public int getId() {return id;}
+    public String getJobTitle() {return jobTitle;}
 
-    public void showEmployeeInfo() {
-        System.out.println("id: " + id);
-        System.out.println("Name: " + name);
-        System.out.println("Job: " + job);
-    }
+    public abstract double calculateSalary();
 }
 
 
 class Manager extends Employee {
-
-    public Manager(String name, String job) {
-        super(name, job);
+    public Manager(String name, String jobTitle) {
+        super(name, jobTitle);
     }
 
     @Override
     public double calculateSalary() {
-        return 3000;
+        return 4000;
     }
 }
 
-class Developer extends Employee {
 
-    private double projectCount;
-    public Developer(String name, String job, double projectCount) {
-        super(name, job);
+class Developer extends Employee {
+    private int projectCount;
+
+    public Developer(String name, String jobTitle, int projectCount) {
+        super(name, jobTitle);
         this.projectCount = projectCount;
     }
 
     @Override
     public double calculateSalary() {
-        return 2000 + projectCount * 300;
+        return 3000 + projectCount * 10;
     }
 }
 
 class Intern extends Employee {
-
-    public Intern(String name, String job) {
-        super(name, job);
+    public Intern(String name, String jobTitle) {
+        super(name, jobTitle);
     }
 
     @Override
